@@ -13,6 +13,8 @@ class Model(nn.Module):
 
         self.layer3 = nn.Conv2d(48, 96, kernel_size=3, padding=1)
         self.pool3 = nn.AvgPool2d(stride=2, kernel_size=3, padding=1)
+        
+        self.gru_layer = nn.GRU(input_size=256, hidden_size=256, num_layers=3, batch_first = True)
 
         self.layer5 = nn.ConvTranspose2d(96, 48, kernel_size=2, stride=2)
         self.layer7 = nn.ConvTranspose2d(48, 24, kernel_size=2, stride=2)
@@ -29,9 +31,8 @@ class Model(nn.Module):
         x = self.layer3(x)
         x = torch.relu(self.pool3(x))
 
-        # if you want to experiment with a dense layer on the "latent space"
-        # between the encoder and decoder parts, here's where you'd put it!
-
+        x, h_n = self.gru_layer(x.view(-1, 96, 16*16))
+    
         x = torch.relu(self.layer5(x.view(-1, 96, 16, 16)))
         x = torch.sigmoid(self.layer7(x)) * 1023.0
 
