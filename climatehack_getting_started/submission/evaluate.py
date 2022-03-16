@@ -31,7 +31,7 @@ class Evaluator(BaseEvaluator):
 
         with torch.no_grad():
             prediction = (
-                self.model(torch.from_numpy(data).view(-1, 12 * 128 * 128))
+                self.model(torch.from_numpy(data).view(-1, 12, 128, 128))
                 .view(24, 64, 64)
                 .detach()
                 .numpy()
